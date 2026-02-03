@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}
+Home
+{% endblock %}
+{% block content %}
+<div class="container mt-4 mb-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <h1>Welcome, {{ current_user.username }}!</h1>
+    </div>
+    <div class="row g-3">
+        <div class="col-12 col-md-6">
+            <a class="btn btn-primary w-100 py-4" href="/crops">Crops</a>
+        </div>
+        <div class="col-12 col-md-6">
+            <a class="btn btn-primary w-100 py-4" href="/sales">Sales</a>
+        </div>
+        <div class="col-12 col-md-6">
+            <a class="btn btn-primary w-100 py-4" href="/addSale">Add Sale</a>
+        </div>
+        <div class="col-12 col-md-6">
+            <a class="btn btn-primary w-100 py-4" href="{{ url_for('updatePassword', userid=current_user.id) }}">Update Password</a>
+        </div>
+        {% if current_user.accounttype == "Admin" %}
+        <div class="col-12 col-md-6 mx-auto">
+            <a class="btn btn-primary w-100 py-4" href="/users">Users</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

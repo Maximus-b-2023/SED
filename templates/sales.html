@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4 text-primary fw-bold text-decoration-underline text-center">Sales</h1>
+<div class="container">
+<table class="table table-striped table-bordered align-middle my-4">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>User ID</th>
+            <th>Crop Name</th>
+            <th>Season</th>
+            <th>Quantity</th>
+            <th>Profit</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sales in sales %}
+        <tr>
+            <td>{{ sales.id }}</td>
+            <td>{{ sales.userid }}</td>
+            <td>{{ sales.crops.cropname }}</td>
+            <td>{{ sales.season }}</td>
+            <td>{{ sales.quantitysold }}</td>
+            <td>{{ sales.profitmade }}</td>
+            <td>
+                <form action="{{ url_for('deleteSale', saleid=sales.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this sale?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

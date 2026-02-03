@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_render_elements.html" import render_field %}
+{% block title %}
+Sales Mannager
+{% endblock %}
+{% block content %}
+<h1>Sales Mannager</h1>
+<form method="post" action="{{ url_for('salesMannager') }}">
+    {{ form.csrf_token }}
+    {{ render_field(form.saleid) }}
+    {{ form.submit }}
+    <a href="/">Return to dashboard</a>
+    <a href="/sales">View Sales</a>
+</form>
+{% endblock %}

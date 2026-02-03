@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "_render_elements.html" import render_field %}
+{% block title %}
+Account Type Mannager
+{% endblock %}
+{% block content %}
+<h1>Account Type Mannager</h1>
+<form method="post" action="{{ url_for('accountTypeMannager', userid=userid) }}">
+    {{ form.csrf_token }}
+    {{ render_field(form.accounttype) }}
+    {{ form.submit }}
+</form>
+{% endblock %}

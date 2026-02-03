@@ -1,0 +1,25 @@
+{% extends "baseNoNav.html" %}
+{% from "_render_elements.html" import render_field %}
+{% block title %}
+Log In
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-primary fw-bold text-decoration-underline text-center">Log In</h1>
+    <form method="post" action="{{ url_for('login') }}" class="p-4 border rounded bg-light">
+        {{ form.csrf_token }}
+        {{ render_field(form.username, class="form-control mb-3") }}
+        {{ render_field(form.password, class="form-control mb-3") }}
+        <div class="form-check mb-3">
+            {{ form.remember(class="form-check-input") }}
+            {{ form.remember.label(class="form-check-label") }}
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class="btn btn-primary") }}
+            <div class="alert alert-info text-center mt-3" role="alert">
+                Don't have an account? <a href="/signup" class="alert-link">Sign Up for FREE!</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
