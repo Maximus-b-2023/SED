@@ -1,6 +1,5 @@
 on:
-  push:
-    - branches
+  - push
 
 jobs:
   test:
