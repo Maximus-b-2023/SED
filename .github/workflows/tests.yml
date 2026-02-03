@@ -1,0 +1,37 @@
+on:
+  push:
+    - branches
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ensure instance exists
+        run: mkdir -p Backend/instance
+
+      - name: Ensure Database directory exists
+        run: |
+          cd Backend/instance
+          mkdir -p Database
+
+      - name: Test with Unit Tests
+        run: |
+          cd Backend
+          python -m tests.test_logic
+
+      - name: Test with pytest
+        run: |
+          cd Backend
+          pytest
