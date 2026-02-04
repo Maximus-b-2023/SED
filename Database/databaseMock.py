@@ -24,10 +24,10 @@ def updateAccountType(targetUID, newAccountType):
 conn = sqlite3.connect('./instance/db.sqlite3')
 cur = conn.cursor
 
-def mockCrops():
+def mockLicences():
     try:
         conn.execute(
-        '''INSERT INTO crops (CROPNAME,SEEDPRICE,LOWESTSELLINGPRICE)
+        '''INSERT INTO licences (CROPNAME,SEEDPRICE,LOWESTSELLINGPRICE)
         VALUES
             ("Blue Jazz",30,50),
             ("Cauliflower",80,175),

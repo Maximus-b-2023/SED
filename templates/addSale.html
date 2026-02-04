@@ -6,8 +6,8 @@
     <h1 class="mb-4 text-primary fw-bold text-decoration-underline text-center">Add Sale</h1>
     <form method="post" action="{{ url_for('addSale') }}" class="p-4 border rounded bg-light">
         {{ form.csrf_token }}
-        {{ render_field(form.cropname, class="form-control mb-3") }}
-        {{ render_field(form.season, class="form-control mb-3") }}
+        {{ render_field(form.licencename, class="form-select mb-3") }}
+        {{ render_field(form.subscription, class="form-select mb-3") }}
         {{ render_field(form.quantitysold, class="form-control mb-3") }}
         {{ render_field(form.revenue, class="form-control mb-3") }}
         <div class="mb-3">

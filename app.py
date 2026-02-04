@@ -3,7 +3,7 @@ from flask import Flask, jsonify, render_template, redirect, request, url_for, f
 from flask_wtf import FlaskForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, current_user, logout_user
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, Email
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -31,21 +31,21 @@ class Users(UserMixin, db.Model):
     password = db.Column(db.String(80), nullable=False)
     accounttype = db.Column(db.String(50), nullable=False, default="User")
 
-class Crops(UserMixin, db.Model):
+class Licences(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cropname = db.Column(db.String(50), nullable=False)
-    seedprice = db.Column(db.String(50), nullable=False)
+    licencename = db.Column(db.String(50), nullable=False)
+    licenceprice = db.Column(db.String(50), nullable=False)
     lowestsellingprice = db.Column(db.Integer, nullable=False)
 
 class Sales(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cropid = db.Column(db.Integer, db.ForeignKey('crops.id'), nullable=False)
-    season = db.Column(db.String(50), nullable=False)
+    licenceid = db.Column(db.Integer, db.ForeignKey('licences.id'), nullable=False)
+    subscription = db.Column(db.String(50), nullable=False)
     quantitysold = db.Column(db.Integer, nullable=False)
     profitmade = db.Column(db.Integer, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    crops = db.relationship('Crops', backref='sales', lazy=True)
+    licences = db.relationship('Licences', backref='sales', lazy=True)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -73,8 +73,8 @@ class AccountForm(FlaskForm):
     submit = SubmitField("Update Account Type")
 
 class SaleForm(FlaskForm):
-    cropname = StringField("Crop Name", validators=[InputRequired()])
-    season = StringField("Season", validators=[InputRequired()])
+    licencename = SelectField("Licence Name", validators=[InputRequired()])
+    subscription = SelectField("Subscription", validators=[InputRequired()])
     quantitysold = StringField("Quantity Sold", validators=[InputRequired()])
     revenue = StringField("Revenue", validators=[InputRequired()])
     submit = SubmitField("Add Sale")
@@ -92,32 +92,32 @@ def setAdmin():
         print("Update failed")
         return "Update failed"
     
-def mockCrops():
-    if not Crops.query.first():
-        db.session.add(Crops(cropname="Blue Jazz", seedprice=30, lowestsellingprice=50))
-        db.session.add(Crops(cropname="Cauliflower", seedprice=80, lowestsellingprice=175))
-        db.session.add(Crops(cropname="Garlic", seedprice=40, lowestsellingprice=60))
-        db.session.add(Crops(cropname="Green Bean", seedprice=60, lowestsellingprice=40))
-        db.session.add(Crops(cropname="Kale", seedprice=70, lowestsellingprice=110))
-        db.session.add(Crops(cropname="Parsnip", seedprice=70, lowestsellingprice=110))
-        db.session.add(Crops(cropname="Potato", seedprice=50, lowestsellingprice=80))
-        db.session.add(Crops(cropname="Strawberry", seedprice=100, lowestsellingprice=120))
-        db.session.add(Crops(cropname="Tulip", seedprice=20, lowestsellingprice=30))
-        db.session.add(Crops(cropname="Unmilled Rice", seedprice=40, lowestsellingprice=30))
+def mockLicences():
+    if not Licences.query.first():
+        db.session.add(Licences(licencename="Basic", licenceprice=30, lowestsellingprice=50))
+        db.session.add(Licences(licencename="Pro", licenceprice=80, lowestsellingprice=175))
+        db.session.add(Licences(licencename="Bronze", licenceprice=40, lowestsellingprice=60))
+        db.session.add(Licences(licencename="Silver", licenceprice=60, lowestsellingprice=40))
+        db.session.add(Licences(licencename="Gold", licenceprice=70, lowestsellingprice=110))
+        db.session.add(Licences(licencename="Gold ent", licenceprice=70, lowestsellingprice=110))
+        db.session.add(Licences(licencename="AI", licenceprice=50, lowestsellingprice=80))
+        db.session.add(Licences(licencename="Gold AI", licenceprice=100, lowestsellingprice=120))
+        db.session.add(Licences(licencename="Student Bronze", licenceprice=20, lowestsellingprice=30))
+        db.session.add(Licences(licencename="Concession Bronze", licenceprice=40, lowestsellingprice=30))
         db.session.commit()
 
 def mockSales():
     if not Sales.query.first():
-        db.session.add(Sales(cropid=1, season="Spring", quantitysold=10, profitmade=1000, userid=1))
-        db.session.add(Sales(cropid=2, season="Spring", quantitysold=5, profitmade=500, userid=1))
-        db.session.add(Sales(cropid=3, season="Spring", quantitysold=15, profitmade=1500, userid=2))
-        db.session.add(Sales(cropid=4, season="Spring", quantitysold=20, profitmade=2000, userid=3))
-        db.session.add(Sales(cropid=5, season="Spring", quantitysold=25, profitmade=2500, userid=4))
-        db.session.add(Sales(cropid=6, season="Spring", quantitysold=30, profitmade=2700, userid=5))
-        db.session.add(Sales(cropid=7, season="Spring", quantitysold=15, profitmade=1500, userid=6))
-        db.session.add(Sales(cropid=8, season="Spring", quantitysold=250, profitmade=25000, userid=7))
-        db.session.add(Sales(cropid=9, season="Spring", quantitysold=55, profitmade=5500, userid=8))
-        db.session.add(Sales(cropid=10, season="Spring", quantitysold=75, profitmade=7500, userid=9))
+        db.session.add(Sales(licenceid=1, subscription="Annual", quantitysold=10, profitmade=1000, userid=1))
+        db.session.add(Sales(licenceid=2, subscription="Monthly", quantitysold=5, profitmade=500, userid=1))
+        db.session.add(Sales(licenceid=3, subscription="Monthly", quantitysold=15, profitmade=1500, userid=2))
+        db.session.add(Sales(licenceid=4, subscription="Monthly", quantitysold=20, profitmade=2000, userid=3))
+        db.session.add(Sales(licenceid=5, subscription="Annual", quantitysold=25, profitmade=2500, userid=4))
+        db.session.add(Sales(licenceid=6, subscription="Monthly", quantitysold=30, profitmade=2700, userid=5))
+        db.session.add(Sales(licenceid=7, subscription="Monthly", quantitysold=15, profitmade=1500, userid=6))
+        db.session.add(Sales(licenceid=8, subscription="Annual", quantitysold=250, profitmade=25000, userid=7))
+        db.session.add(Sales(licenceid=9, subscription="Annual", quantitysold=55, profitmade=5500, userid=8))
+        db.session.add(Sales(licenceid=10, subscription="Monthly", quantitysold=75, profitmade=7500, userid=9))
         db.session.commit()
     
 def initDB():
@@ -197,16 +197,11 @@ def initDB():
 
 
         setAdmin()  # Ensure the first user is an admin
-        if not Crops.query.first():
-            mockCrops()
+        if not Licences.query.first():
+            mockLicences()
         if not Sales.query.first():
             mockSales()
 
-# def is_gunicorn_worker():
-#     return "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
-
-# if not is_gunicorn_worker() or os.environ.get("GUNICORN_WORKER_ID", "0") == "0":
-#     initDB()
 
 @app.route("/")
 @login_required
@@ -279,11 +274,11 @@ def users():
         flash("Could not fetch users.")
         return redirect(url_for("index"))
 
-@app.route('/crops', methods=['GET'])
+@app.route('/licences', methods=['GET'])
 @login_required
-def crops():
-    crops = Crops.query.all()
-    return render_template("crops.html", crops=crops)
+def licences():
+    licences = Licences.query.all()
+    return render_template("licences.html", licences=licences)
 
 @app.route('/sales', methods=['GET'])
 @login_required
@@ -299,19 +294,21 @@ def sales():
 @login_required
 def addSale():
     form = SaleForm()
+    form.licencename.choices = [(lic.licencename, lic.licencename )for lic in Licences.query.all()]
+    form.subscription.choices = ["Monthly", "Anunual"]
     if form.validate_on_submit():
         userid = current_user.id
-        cropname = form.cropname.data
-        season = form.season.data
+        licencename = form.licencename.data
+        subscription = form.subscription.data
         quantitysold = form.quantitysold.data
         revenue = form.revenue.data
         
-        crop = Crops.query.filter_by(cropname=cropname).first()
-        if not crop:
-            flash("Crop not found.")
+        licence = Licences.query.filter_by(licencename=licencename).first()
+        if not licence:
+            flash("Licence not found.")
             return redirect(url_for("addSale"))
         
-        new_sale = Sales(userid=userid, cropid=crop.id, season=season, quantitysold=quantitysold, profitmade=revenue)
+        new_sale = Sales(userid=userid, licenceid=licence.id, subscription=subscription, quantitysold=quantitysold, profitmade=revenue)
         db.session.add(new_sale)
         db.session.commit()
         flash("Sale added successfully.")

@@ -10,10 +10,10 @@
 #                  ACCOUNTTYPE    TEXT    NOT NULL);''')
 #     print("Table Created successfully")
 
-# def createCropsTable():
+# def createLicencesTable():
 #     conn = sqlite3.connect('./instance/db.sqlite3')
 
-#     conn.execute('''CREATE TABLE IF NOT EXISTS crops
+#     conn.execute('''CREATE TABLE IF NOT EXISTS licences
 #                  (CROPNAME       TEXT    NOT NULL,
 #                  SEEDPRICE       INT    NOT NULL,
 #                  LOWESTSELLINGPRICE          INT    NOT NULL);''')
@@ -32,5 +32,5 @@
 #     print("Table Created successfully")
 
 # createUserTable()
-# createCropsTable()
+# createLicencesTable()
 # createSalesTable()

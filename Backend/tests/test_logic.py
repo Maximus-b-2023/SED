@@ -2,7 +2,7 @@ import sys
 import os
 import unittest
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from app import app, db, Users, Crops, Sales, setAdmin, mockCrops, mockSales, initDB
+from app import app, db, Users, Licences, Sales, setAdmin, mockLicences, mockSales, initDB
 
 TEST_DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'instance', 'test_db.sqlite3')
 TEST_DB_URI = "sqlite:///" + os.path.abspath(TEST_DB_PATH)
@@ -31,18 +31,18 @@ class BusinessLogicTestCase(unittest.TestCase):
             self.assertIsNotNone(admin)
             self.assertEqual(admin.accounttype, "Admin")
 
-    def test_mockCrops_adds_crops(self):
+    def test_mockLicences_adds_licences(self):
         with app.app_context():
-            mockCrops()
-            crops = Crops.query.all()
-            self.assertGreaterEqual(len(crops), 1)
-            self.assertTrue(any(c.cropname == "Blue Jazz" for c in crops))
+            mockLicences()
+            licences = Licences.query.all()
+            self.assertGreaterEqual(len(licences), 1)
+            self.assertTrue(any(c.licencename == "Blue Jazz" for c in licences))
 
     def test_mockSales_adds_sales(self):
         with app.app_context():
-            # Add required users and crops first
+            # Add required users and licences first
             db.session.add(Users(username="User1", email="u1@u.com", password="pw", accounttype="User"))
-            db.session.add(Crops(cropname="Blue Jazz", seedprice=30, lowestsellingprice=50))
+            db.session.add(Licences(licencename="Blue Jazz", licenceprice=30, lowestsellingprice=50))
             db.session.commit()
             mockSales()
             sales = Sales.query.all()

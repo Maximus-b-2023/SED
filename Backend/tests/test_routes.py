@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import pytest
-from app import app, db, Users, Crops, Sales, initDB
+from app import app, db, Users, Licences, Sales, initDB
 from werkzeug.security import generate_password_hash
 
 @pytest.fixture(scope="module")
@@ -22,9 +22,9 @@ def test_client():
             db.session.add(admin)
             db.session.add(user)
             db.session.commit()
-            # Add a crop for sale tests
-            crop = Crops(cropname="Blue Jazz", seedprice=30, lowestsellingprice=50)
-            db.session.add(crop)
+            # Add a licence for sale tests
+            licence = Licences(licencename="Blue Jazz", licenceprice=30, lowestsellingprice=50)
+            db.session.add(licence)
             db.session.commit()
         yield client
     if os.path.exists(db_path):
@@ -71,9 +71,9 @@ def test_users_page(test_client):
     response = test_client.get("/users")
     assert b"user" in response.data or response.status_code == 200
 
-def test_crops_page(test_client):
+def test_licences_page(test_client):
     login(test_client, "admin", "adminpw")
-    response = test_client.get("/crops")
+    response = test_client.get("/licences")
     assert b"Blue Jazz" in response.data
 
 def test_sales_page_admin(test_client):
