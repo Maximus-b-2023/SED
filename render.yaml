@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: sed-flask-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_SECRET_KEY
+        scope: build,runtime
+        value: ${{ secrets.FLASK_SECRET_KEY }}
+      - key: ADMIN_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.ADMIN_PASSWORD }}
+      - key: TEST_USER1_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER1_PASSWORD }}
+      - key: TEST_USER2_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER2_PASSWORD }}
+      - key: TEST_USER3_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER3_PASSWORD }}
+      - key: TEST_USER4_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER4_PASSWORD }}
+      - key: TEST_USER5_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER5_PASSWORD }}
+      - key: TEST_USER6_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER6_PASSWORD }}
+      - key: TEST_USER7_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER7_PASSWORD }}
+      - key: TEST_USER8_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER8_PASSWORD }}
+      - key: TEST_USER9_PASSWORD
+        scope: build,runtime
+        value: ${{ secrets.TEST_USER9_PASSWORD }}
