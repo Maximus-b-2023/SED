@@ -99,8 +99,8 @@ class AccountForm(FlaskForm):
 class SaleForm(FlaskForm):
     licencename = SelectField("Licence Name", validators=[InputRequired()])
     subscription = SelectField("Subscription", validators=[InputRequired()])
-    quantitysold = IntegerField("Quantity Sold", validators=[InputRequired(), NumberRange(min=1, message="Quantity must be a positive number")])
-    revenue = DecimalField("Revenue", validators=[InputRequired(), NumberRange(min=0, message="Revenue must be a positive number")], places=2)
+    quantitysold = IntegerField("Quantity Sold", validators=[InputRequired(), NumberRange(min=1, max=10000000, message="Quantity must be between 1 and 10,000,000")])
+    revenue = DecimalField("Revenue", validators=[InputRequired(), NumberRange(min=0, max=999999999.99, message="Revenue must be between 0 and 999,999,999.99")], places=2)
     submit = SubmitField("Add Sale")
 
 def setAdmin():
