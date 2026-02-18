@@ -8,7 +8,7 @@
 #     except:
 #         return "connection failed"
 #     try:
-#         sql = '''SELECT ROWID, CROPNAME, SEEDPRICE, LOWESTSELLINGPRICE FROM licences'''
+#         sql = '''SELECT ROWID, CROPNAME, LICENCEPRICE, LOWESTSELLINGPRICE FROM licences'''
 #         cur.execute(sql)
 #         licencesList = cur.fetchall()
 #         print(licencesList)
