@@ -28,7 +28,18 @@ if not secret:
     )
     secret = os.urandom(24)
 app.config["SECRET_KEY"] = secret
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(os.getcwd(), "instance", "db.sqlite3")
+# Ensure the instance directory exists before creating the SQLite file
+instance_dir = os.path.join(os.getcwd(), "instance")
+try:
+    os.makedirs(instance_dir, exist_ok=True)
+except Exception as e:
+    try:
+        import logging
+        logging.getLogger(__name__).error(f"Could not create instance directory: {e}")
+    except Exception:
+        pass
+db_file = os.path.join(instance_dir, "db.sqlite3")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + db_file
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
