@@ -66,7 +66,7 @@ class Sales(UserMixin, db.Model):
     licenceid = db.Column(db.Integer, db.ForeignKey('licences.id'), nullable=False)
     subscription = db.Column(db.String(50), nullable=False)
     quantitysold = db.Column(db.Integer, nullable=False)
-    profitmade = db.Column(db.Integer, nullable=False)
+    profitmade = db.Column(db.Float, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     licences = db.relationship('Licences', backref='sales', lazy=True)
@@ -100,7 +100,7 @@ class SaleForm(FlaskForm):
     licencename = SelectField("Licence Name", validators=[InputRequired()])
     subscription = SelectField("Subscription", validators=[InputRequired()])
     quantitysold = IntegerField("Quantity Sold", validators=[InputRequired(), NumberRange(min=1, message="Quantity must be a positive number")])
-    revenue = IntegerField("Revenue", validators=[InputRequired(), NumberRange(min=0, message="Revenue must be a positive number")], places=2)
+    revenue = DecimalField("Revenue", validators=[InputRequired(), NumberRange(min=0, message="Revenue must be a positive number")], places=2)
     submit = SubmitField("Add Sale")
 
 def setAdmin():
@@ -349,8 +349,8 @@ def addSale():
         userid = current_user.id
         licencename = form.licencename.data
         subscription = form.subscription.data
-        quantitysold = form.quantitysold.data
-        revenue = form.revenue.data
+        quantitysold = int(form.quantitysold.data)
+        revenue = float(form.revenue.data)
         
         licence = Licences.query.filter_by(licencename=licencename).first()
         if not licence:
