@@ -14,7 +14,7 @@ from Backend.accountTypeMannager import authAdmin, fetchUsers, updateAccountType
 #dbdir = "sqlite:///" + os.path.abspath(os.getcwd()) + "./Database/tables.db"
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "SomeSecret"
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(os.getcwd(), "instance", "db.sqlite3")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -123,74 +123,86 @@ def mockSales():
 def initDB():
     with app.app_context():
         db.create_all()
+        # Get passwords from environment variables, with fallbacks for development
+        admin_pw = os.environ.get("ADMIN_PASSWORD")
+        user1_pw = os.environ.get("TEST_USER1_PASSWORD")
+        user2_pw = os.environ.get("TEST_USER2_PASSWORD")
+        user3_pw = os.environ.get("TEST_USER3_PASSWORD")
+        user4_pw = os.environ.get("TEST_USER4_PASSWORD")
+        user5_pw = os.environ.get("TEST_USER5_PASSWORD")
+        user6_pw = os.environ.get("TEST_USER6_PASSWORD")
+        user7_pw = os.environ.get("TEST_USER7_PASSWORD")
+        user8_pw = os.environ.get("TEST_USER8_PASSWORD")
+        user9_pw = os.environ.get("TEST_USER9_PASSWORD")
+
         # Only add if not already present
         if not Users.query.filter(
         (Users.username == "Admin1") | (Users.email == "Admin1@admin.com")
         ).first():
-            hashed_pw = generate_password_hash("Admin123", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(admin_pw, method="pbkdf2:sha256")
             new_user = Users(username="Admin1", email="Admin1@admin.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User1") | (Users.email == "User1@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser1", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user1_pw, method="pbkdf2:sha256")
             new_user = Users(username="User1", email="User1@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User2") | (Users.email == "User2@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser2", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user2_pw, method="pbkdf2:sha256")
             new_user = Users(username="User2", email="User2@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User3") | (Users.email == "User3@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser3", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user3_pw, method="pbkdf2:sha256")
             new_user = Users(username="User3", email="User3@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User4") | (Users.email == "User4@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser4", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user4_pw, method="pbkdf2:sha256")
             new_user = Users(username="User4", email="User4@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User5") | (Users.email == "User5@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser5", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user5_pw, method="pbkdf2:sha256")
             new_user = Users(username="User5", email="User5@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User6") | (Users.email == "User6@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser6", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user6_pw, method="pbkdf2:sha256")
             new_user = Users(username="User6", email="User6@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User7") | (Users.email == "User7@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser7", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user7_pw, method="pbkdf2:sha256")
             new_user = Users(username="User7", email="User7@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User8") | (Users.email == "User8@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser8", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user8_pw, method="pbkdf2:sha256")
             new_user = Users(username="User8", email="User8@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User9") | (Users.email == "User9@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser9", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user9_pw, method="pbkdf2:sha256")
             new_user = Users(username="User9", email="User9@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
