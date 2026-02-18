@@ -8,8 +8,28 @@
         {{ form.csrf_token }}
         {{ render_field(form.licencename, class="form-select mb-3") }}
         {{ render_field(form.subscription, class="form-select mb-3") }}
-        {{ render_field(form.quantitysold, class="form-control mb-3") }}
-        {{ render_field(form.revenue, class="form-control mb-3") }}
+        <div class="mb-3">
+            <label for="{{ form.quantitysold.id }}">{{ form.quantitysold.label.text }}</label>
+            {{ form.quantitysold(type="number", min="1", step="1", class="form-control") }}
+            {% if form.quantitysold.errors %}
+            <ul>
+                {% for error in form.quantitysold.errors %}
+                <li style="color:red;">{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.revenue.id }}">{{ form.revenue.label.text }}</label>
+            {{ form.revenue(type="number", min="0", step="0.01", class="form-control") }}
+            {% if form.revenue.errors %}
+            <ul>
+                {% for error in form.revenue.errors %}
+                <li style="color:red;">{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
         <div class="mb-3">
             {{ form.submit(class="btn btn-primary") }}
         </div>

@@ -3,8 +3,8 @@ from flask import Flask, jsonify, render_template, redirect, request, url_for, f
 from flask_wtf import FlaskForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, current_user, logout_user
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
-from wtforms.validators import InputRequired, Length, Email
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, IntegerField, DecimalField
+from wtforms.validators import InputRequired, Length, Email, NumberRange
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -99,8 +99,8 @@ class AccountForm(FlaskForm):
 class SaleForm(FlaskForm):
     licencename = SelectField("Licence Name", validators=[InputRequired()])
     subscription = SelectField("Subscription", validators=[InputRequired()])
-    quantitysold = StringField("Quantity Sold", validators=[InputRequired()])
-    revenue = StringField("Revenue", validators=[InputRequired()])
+    quantitysold = IntegerField("Quantity Sold", validators=[InputRequired(), NumberRange(min=1, message="Quantity must be a positive number")])
+    revenue = IntegerField("Revenue", validators=[InputRequired(), NumberRange(min=0, message="Revenue must be a positive number")], places=2)
     submit = SubmitField("Add Sale")
 
 def setAdmin():
