@@ -1,31 +1,58 @@
 import sqlite3
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-def getLicencePrice(userinput):
+def _fetch_single_int(column: str, licence_id) -> int | None:
+    """Fetch a single integer column for a licence by id using parameterized SQL.
+    Returns None if the row or value doesn't exist.
+    """
+    try:
+        lid = int(licence_id)
+    except Exception:
+        logger.warning("Invalid licence_id provided: %s", licence_id)
+        return None
+
     try:
         conn = sqlite3.connect('./instance/db.sqlite3')
         cur = conn.cursor()
-    except:
-        return "connection failed"
-    sql = 'select LOWESTSELLINGPRICE from licences WHERE ID ="'+ str(userinput) + '";'
-    cur.execute(sql)
-    licenceValue = cur.fetchone()
-    return int(licenceValue[0])
+    except Exception:
+        logger.exception("DB connection failed in _fetch_single_int")
+        return None
 
-def getLicencePrice(userinput):
     try:
-        conn = sqlite3.connect('./instance/db.sqlite3')
-        cur = conn.cursor()
-    except:
-        return "connection failed"
-    sql = 'select SEEDPRICE from licences WHERE ID ="'+ str(userinput) + '";'
-    cur.execute(sql)
-    licencePrice = cur.fetchone()
-    return int(licencePrice[0])
+        sql = f"SELECT {column} FROM licences WHERE id = ?"
+        cur.execute(sql, (lid,))
+        row = cur.fetchone()
+        if not row or row[0] is None:
+            return None
+        return int(row[0])
+    except Exception:
+        logger.exception("Failed to fetch %s for licence id=%s", column, licence_id)
+        return None
 
-def calcMinValue(licenceName, quantity):
-    minValue = quantity * getLicencePrice(licenceName)
+
+def getLicencePrice(licence_id):
+    """Return the LICENCEPRICE for the licence (preserves original behaviour).
+    Returns 0 if not found or invalid input.
+    """
+    val = _fetch_single_int("LICENCEPRICE", licence_id)
+    return int(val) if val is not None else 0
+
+
+def getLowestSellingPrice(licence_id):
+    """Return the LOWESTSELLINGPRICE for the licence. Returns 0 if missing.
+    """
+    val = _fetch_single_int("LOWESTSELLINGPRICE", licence_id)
+    return int(val) if val is not None else 0
+
+
+def calcMinValue(licenceID, quantity):
+    """Calculate the minimum value using the lowest selling price."""
+    minValue = quantity * getLowestSellingPrice(licenceID)
     return minValue
+
 
 def calcLicenceCost(licenceID, quantity):
     licencesCost = quantity * getLicencePrice(licenceID)

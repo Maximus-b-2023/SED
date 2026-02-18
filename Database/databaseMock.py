@@ -27,7 +27,7 @@ cur = conn.cursor
 def mockLicences():
     try:
         conn.execute(
-        '''INSERT INTO licences (CROPNAME,SEEDPRICE,LOWESTSELLINGPRICE)
+        '''INSERT INTO licences (CROPNAME,LICENCEPRICE,LOWESTSELLINGPRICE)
         VALUES
             ("Blue Jazz",30,50),
             ("Cauliflower",80,175),

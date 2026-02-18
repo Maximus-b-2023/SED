@@ -15,7 +15,7 @@
 
 #     conn.execute('''CREATE TABLE IF NOT EXISTS licences
 #                  (CROPNAME       TEXT    NOT NULL,
-#                  SEEDPRICE       INT    NOT NULL,
+#                  LICENCEPRICE       INT    NOT NULL,
 #                  LOWESTSELLINGPRICE          INT    NOT NULL);''')
 #     print("Table Created successfully")
 
