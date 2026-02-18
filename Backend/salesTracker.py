@@ -1,16 +1,16 @@
 import sqlite3
 
-from costCalculators import calcSeedCost
+from costCalculators import calcLicenceCost
 
 
-def createSaleReport(userId,cropId, season, quantity, revenue):
+def createSaleReport(userId,licenceId, subscription, quantity, revenue):
     try:
         conn = sqlite3.connect('./instance/db.sqlite3')
     except:
         return "connection failed"
-    profit = revenue - calcSeedCost(cropId, quantity)
-    sql = '''INSERT INTO sales (userid,cropid,season,quantitysold,profitmade) VALUES(?,?,?,?,?)'''
-    params = (userId, cropId, season, quantity, profit)
+    profit = revenue - calcLicenceCost(licenceId, quantity)
+    sql = '''INSERT INTO sales (userid,licenceid,subscription,quantitysold,profitmade) VALUES(?,?,?,?,?)'''
+    params = (userId, licenceId, subscription, quantity, profit)
     try:
         conn.execute(sql, params)
         conn.commit()

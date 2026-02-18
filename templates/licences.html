@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Licences{% endblock %}
+{% block content %}
+<h1 class="mb-4 text-primary fw-bold text-decoration-underline text-center">Licences</h1>
+<div class="container">
+<table class="table table-striped table-bordered align-middle m-4">
+    <thead class="table-primary">
+        <tr>
+            <th>ID</th>
+            <th>Licence name</th>
+            <th>Licence Price</th>
+            <th>Lowest Selling Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for licences in licences %}
+        <tr>
+            <td>{{ licences.id }}</td>
+            <td>{{ licences.licencename }}</td>
+            <td>{{ licences.licenceprice }}</td>
+            <td>{{ licences.lowestsellingprice }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

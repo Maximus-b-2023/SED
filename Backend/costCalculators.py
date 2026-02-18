@@ -1,32 +1,32 @@
 import sqlite3
 
 
-def getCropPrice(userinput):
+def getLicencePrice(userinput):
     try:
         conn = sqlite3.connect('./instance/db.sqlite3')
         cur = conn.cursor()
     except:
         return "connection failed"
-    sql = 'select LOWESTSELLINGPRICE from crops WHERE ID ="'+ str(userinput) + '";'
+    sql = 'select LOWESTSELLINGPRICE from licences WHERE ID ="'+ str(userinput) + '";'
     cur.execute(sql)
-    cropValue = cur.fetchone()
-    return int(cropValue[0])
+    licenceValue = cur.fetchone()
+    return int(licenceValue[0])
 
-def getSeedPrice(userinput):
+def getLicencePrice(userinput):
     try:
         conn = sqlite3.connect('./instance/db.sqlite3')
         cur = conn.cursor()
     except:
         return "connection failed"
-    sql = 'select SEEDPRICE from crops WHERE ID ="'+ str(userinput) + '";'
+    sql = 'select SEEDPRICE from licences WHERE ID ="'+ str(userinput) + '";'
     cur.execute(sql)
-    seedPrice = cur.fetchone()
-    return int(seedPrice[0])
+    licencePrice = cur.fetchone()
+    return int(licencePrice[0])
 
-def calcMinValue(cropName, quantity):
-    minValue = quantity * getCropPrice(cropName)
+def calcMinValue(licenceName, quantity):
+    minValue = quantity * getLicencePrice(licenceName)
     return minValue
 
-def calcSeedCost(cropID, quantity):
-    seedsCost = quantity * getSeedPrice(cropID)
-    return seedsCost
+def calcLicenceCost(licenceID, quantity):
+    licencesCost = quantity * getLicencePrice(licenceID)
+    return licencesCost

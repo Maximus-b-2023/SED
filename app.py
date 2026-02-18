@@ -3,18 +3,22 @@ from flask import Flask, jsonify, render_template, redirect, request, url_for, f
 from flask_wtf import FlaskForm
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_required, login_user, current_user, logout_user
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, Email
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
 import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 from Backend.accountTypeMannager import authAdmin, fetchUsers, updateAccountType
 
 #dbdir = "sqlite:///" + os.path.abspath(os.getcwd()) + "./Database/tables.db"
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "SomeSecret"
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(os.getcwd(), "instance", "db.sqlite3")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -31,21 +35,21 @@ class Users(UserMixin, db.Model):
     password = db.Column(db.String(80), nullable=False)
     accounttype = db.Column(db.String(50), nullable=False, default="User")
 
-class Crops(UserMixin, db.Model):
+class Licences(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cropname = db.Column(db.String(50), nullable=False)
-    seedprice = db.Column(db.String(50), nullable=False)
+    licencename = db.Column(db.String(50), nullable=False)
+    licenceprice = db.Column(db.String(50), nullable=False)
     lowestsellingprice = db.Column(db.Integer, nullable=False)
 
 class Sales(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cropid = db.Column(db.Integer, db.ForeignKey('crops.id'), nullable=False)
-    season = db.Column(db.String(50), nullable=False)
+    licenceid = db.Column(db.Integer, db.ForeignKey('licences.id'), nullable=False)
+    subscription = db.Column(db.String(50), nullable=False)
     quantitysold = db.Column(db.Integer, nullable=False)
     profitmade = db.Column(db.Integer, nullable=False)
     userid = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    crops = db.relationship('Crops', backref='sales', lazy=True)
+    licences = db.relationship('Licences', backref='sales', lazy=True)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -73,8 +77,8 @@ class AccountForm(FlaskForm):
     submit = SubmitField("Update Account Type")
 
 class SaleForm(FlaskForm):
-    cropname = StringField("Crop Name", validators=[InputRequired()])
-    season = StringField("Season", validators=[InputRequired()])
+    licencename = SelectField("Licence Name", validators=[InputRequired()])
+    subscription = SelectField("Subscription", validators=[InputRequired()])
     quantitysold = StringField("Quantity Sold", validators=[InputRequired()])
     revenue = StringField("Revenue", validators=[InputRequired()])
     submit = SubmitField("Add Sale")
@@ -92,121 +96,128 @@ def setAdmin():
         print("Update failed")
         return "Update failed"
     
-def mockCrops():
-    if not Crops.query.first():
-        db.session.add(Crops(cropname="Blue Jazz", seedprice=30, lowestsellingprice=50))
-        db.session.add(Crops(cropname="Cauliflower", seedprice=80, lowestsellingprice=175))
-        db.session.add(Crops(cropname="Garlic", seedprice=40, lowestsellingprice=60))
-        db.session.add(Crops(cropname="Green Bean", seedprice=60, lowestsellingprice=40))
-        db.session.add(Crops(cropname="Kale", seedprice=70, lowestsellingprice=110))
-        db.session.add(Crops(cropname="Parsnip", seedprice=70, lowestsellingprice=110))
-        db.session.add(Crops(cropname="Potato", seedprice=50, lowestsellingprice=80))
-        db.session.add(Crops(cropname="Strawberry", seedprice=100, lowestsellingprice=120))
-        db.session.add(Crops(cropname="Tulip", seedprice=20, lowestsellingprice=30))
-        db.session.add(Crops(cropname="Unmilled Rice", seedprice=40, lowestsellingprice=30))
+def mockLicences():
+    if not Licences.query.first():
+        db.session.add(Licences(licencename="Basic", licenceprice=30, lowestsellingprice=50))
+        db.session.add(Licences(licencename="Pro", licenceprice=80, lowestsellingprice=175))
+        db.session.add(Licences(licencename="Bronze", licenceprice=40, lowestsellingprice=60))
+        db.session.add(Licences(licencename="Silver", licenceprice=60, lowestsellingprice=40))
+        db.session.add(Licences(licencename="Gold", licenceprice=70, lowestsellingprice=110))
+        db.session.add(Licences(licencename="Gold ent", licenceprice=70, lowestsellingprice=110))
+        db.session.add(Licences(licencename="AI", licenceprice=50, lowestsellingprice=80))
+        db.session.add(Licences(licencename="Gold AI", licenceprice=100, lowestsellingprice=120))
+        db.session.add(Licences(licencename="Student Bronze", licenceprice=20, lowestsellingprice=30))
+        db.session.add(Licences(licencename="Concession Bronze", licenceprice=40, lowestsellingprice=30))
         db.session.commit()
 
 def mockSales():
     if not Sales.query.first():
-        db.session.add(Sales(cropid=1, season="Spring", quantitysold=10, profitmade=1000, userid=1))
-        db.session.add(Sales(cropid=2, season="Spring", quantitysold=5, profitmade=500, userid=1))
-        db.session.add(Sales(cropid=3, season="Spring", quantitysold=15, profitmade=1500, userid=2))
-        db.session.add(Sales(cropid=4, season="Spring", quantitysold=20, profitmade=2000, userid=3))
-        db.session.add(Sales(cropid=5, season="Spring", quantitysold=25, profitmade=2500, userid=4))
-        db.session.add(Sales(cropid=6, season="Spring", quantitysold=30, profitmade=2700, userid=5))
-        db.session.add(Sales(cropid=7, season="Spring", quantitysold=15, profitmade=1500, userid=6))
-        db.session.add(Sales(cropid=8, season="Spring", quantitysold=250, profitmade=25000, userid=7))
-        db.session.add(Sales(cropid=9, season="Spring", quantitysold=55, profitmade=5500, userid=8))
-        db.session.add(Sales(cropid=10, season="Spring", quantitysold=75, profitmade=7500, userid=9))
+        db.session.add(Sales(licenceid=1, subscription="Annual", quantitysold=10, profitmade=1000, userid=1))
+        db.session.add(Sales(licenceid=2, subscription="Monthly", quantitysold=5, profitmade=500, userid=1))
+        db.session.add(Sales(licenceid=3, subscription="Monthly", quantitysold=15, profitmade=1500, userid=2))
+        db.session.add(Sales(licenceid=4, subscription="Monthly", quantitysold=20, profitmade=2000, userid=3))
+        db.session.add(Sales(licenceid=5, subscription="Annual", quantitysold=25, profitmade=2500, userid=4))
+        db.session.add(Sales(licenceid=6, subscription="Monthly", quantitysold=30, profitmade=2700, userid=5))
+        db.session.add(Sales(licenceid=7, subscription="Monthly", quantitysold=15, profitmade=1500, userid=6))
+        db.session.add(Sales(licenceid=8, subscription="Annual", quantitysold=250, profitmade=25000, userid=7))
+        db.session.add(Sales(licenceid=9, subscription="Annual", quantitysold=55, profitmade=5500, userid=8))
+        db.session.add(Sales(licenceid=10, subscription="Monthly", quantitysold=75, profitmade=7500, userid=9))
         db.session.commit()
     
 def initDB():
     with app.app_context():
         db.create_all()
+        # Get passwords from environment variables, with fallbacks for development
+        admin_pw = os.environ.get("ADMIN_PASSWORD")
+        user1_pw = os.environ.get("TEST_USER1_PASSWORD")
+        user2_pw = os.environ.get("TEST_USER2_PASSWORD")
+        user3_pw = os.environ.get("TEST_USER3_PASSWORD")
+        user4_pw = os.environ.get("TEST_USER4_PASSWORD")
+        user5_pw = os.environ.get("TEST_USER5_PASSWORD")
+        user6_pw = os.environ.get("TEST_USER6_PASSWORD")
+        user7_pw = os.environ.get("TEST_USER7_PASSWORD")
+        user8_pw = os.environ.get("TEST_USER8_PASSWORD")
+        user9_pw = os.environ.get("TEST_USER9_PASSWORD")
+
         # Only add if not already present
         if not Users.query.filter(
         (Users.username == "Admin1") | (Users.email == "Admin1@admin.com")
         ).first():
-            hashed_pw = generate_password_hash("Admin123", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(admin_pw, method="pbkdf2:sha256")
             new_user = Users(username="Admin1", email="Admin1@admin.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User1") | (Users.email == "User1@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser1", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user1_pw, method="pbkdf2:sha256")
             new_user = Users(username="User1", email="User1@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User2") | (Users.email == "User2@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser2", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user2_pw, method="pbkdf2:sha256")
             new_user = Users(username="User2", email="User2@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User3") | (Users.email == "User3@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser3", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user3_pw, method="pbkdf2:sha256")
             new_user = Users(username="User3", email="User3@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User4") | (Users.email == "User4@user.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser4", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user4_pw, method="pbkdf2:sha256")
             new_user = Users(username="User4", email="User4@user.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User5") | (Users.email == "User5@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser5", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user5_pw, method="pbkdf2:sha256")
             new_user = Users(username="User5", email="User5@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User6") | (Users.email == "User6@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser6", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user6_pw, method="pbkdf2:sha256")
             new_user = Users(username="User6", email="User6@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User7") | (Users.email == "User7@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser7", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user7_pw, method="pbkdf2:sha256")
             new_user = Users(username="User7", email="User7@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User8") | (Users.email == "User8@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser8", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user8_pw, method="pbkdf2:sha256")
             new_user = Users(username="User8", email="User8@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
         if not Users.query.filter(
         (Users.username == "User9") | (Users.email == "User9@email.com")
         ).first():
-            hashed_pw = generate_password_hash("TestUser9", method="pbkdf2:sha256")
+            hashed_pw = generate_password_hash(user9_pw, method="pbkdf2:sha256")
             new_user = Users(username="User9", email="User9@email.com", password=hashed_pw)
             db.session.add(new_user)
             db.session.commit()
 
 
         setAdmin()  # Ensure the first user is an admin
-        if not Crops.query.first():
-            mockCrops()
+        if not Licences.query.first():
+            mockLicences()
         if not Sales.query.first():
             mockSales()
 
-# def is_gunicorn_worker():
-#     return "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
-
-# if not is_gunicorn_worker() or os.environ.get("GUNICORN_WORKER_ID", "0") == "0":
-#     initDB()
 
 @app.route("/")
 @login_required
@@ -279,11 +290,11 @@ def users():
         flash("Could not fetch users.")
         return redirect(url_for("index"))
 
-@app.route('/crops', methods=['GET'])
+@app.route('/licences', methods=['GET'])
 @login_required
-def crops():
-    crops = Crops.query.all()
-    return render_template("crops.html", crops=crops)
+def licences():
+    licences = Licences.query.all()
+    return render_template("licences.html", licences=licences)
 
 @app.route('/sales', methods=['GET'])
 @login_required
@@ -299,19 +310,21 @@ def sales():
 @login_required
 def addSale():
     form = SaleForm()
+    form.licencename.choices = [(lic.licencename, lic.licencename )for lic in Licences.query.all()]
+    form.subscription.choices = ["Monthly", "Anunual"]
     if form.validate_on_submit():
         userid = current_user.id
-        cropname = form.cropname.data
-        season = form.season.data
+        licencename = form.licencename.data
+        subscription = form.subscription.data
         quantitysold = form.quantitysold.data
         revenue = form.revenue.data
         
-        crop = Crops.query.filter_by(cropname=cropname).first()
-        if not crop:
-            flash("Crop not found.")
+        licence = Licences.query.filter_by(licencename=licencename).first()
+        if not licence:
+            flash("Licence not found.")
             return redirect(url_for("addSale"))
         
-        new_sale = Sales(userid=userid, cropid=crop.id, season=season, quantitysold=quantitysold, profitmade=revenue)
+        new_sale = Sales(userid=userid, licenceid=licence.id, subscription=subscription, quantitysold=quantitysold, profitmade=revenue)
         db.session.add(new_sale)
         db.session.commit()
         flash("Sale added successfully.")
