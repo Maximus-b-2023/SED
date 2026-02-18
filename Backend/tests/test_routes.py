@@ -7,9 +7,14 @@ from werkzeug.security import generate_password_hash
 
 @pytest.fixture(scope="module")
 def test_client():
+    # Ensure instance directory exists
+    INSTANCE_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'instance')
+    os.makedirs(INSTANCE_PATH, exist_ok=True)
+    
     # Use a test database
-    db_path = os.path.join(os.path.dirname(__file__), '..', 'instance', 'test_routes.sqlite3')
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.abspath(db_path)
+    db_path = os.path.join(INSTANCE_PATH, 'test_routes.sqlite3')
+    db_uri = "sqlite:///" + db_path.replace('\\', '/') if '\\' in db_path else "sqlite:///" + db_path
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     app.config["TESTING"] = True
     app.config["WTF_CSRF_ENABLED"] = False  # Disable CSRF for testing
     with app.test_client() as client:

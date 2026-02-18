@@ -4,8 +4,12 @@ import unittest
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from app import app, db, Users, Licences, Sales, setAdmin, mockLicences, mockSales, initDB
 
-TEST_DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'instance', 'test_db.sqlite3')
-TEST_DB_URI = "sqlite:///" + os.path.abspath(TEST_DB_PATH)
+# Ensure instance directory exists and create test DB path
+INSTANCE_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'instance')
+os.makedirs(INSTANCE_PATH, exist_ok=True)
+
+TEST_DB_PATH = os.path.join(INSTANCE_PATH, 'test_db.sqlite3')
+TEST_DB_URI = "sqlite:///" + TEST_DB_PATH.replace('\\', '/') if '\\' in TEST_DB_PATH else "sqlite:///" + TEST_DB_PATH
 
 class BusinessLogicTestCase(unittest.TestCase):
     def setUp(self):
@@ -36,13 +40,13 @@ class BusinessLogicTestCase(unittest.TestCase):
             mockLicences()
             licences = Licences.query.all()
             self.assertGreaterEqual(len(licences), 1)
-            self.assertTrue(any(c.licencename == "Blue Jazz" for c in licences))
+            self.assertTrue(any(c.licencename == "Basic" for c in licences))
 
     def test_mockSales_adds_sales(self):
         with app.app_context():
             # Add required users and licences first
             db.session.add(Users(username="User1", email="u1@u.com", password="pw", accounttype="User"))
-            db.session.add(Licences(licencename="Blue Jazz", licenceprice=30, lowestsellingprice=50))
+            db.session.add(Licences(licencename="Basic", licenceprice=30, lowestsellingprice=50))
             db.session.commit()
             mockSales()
             sales = Sales.query.all()

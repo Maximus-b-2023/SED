@@ -6,8 +6,12 @@ from flask_login import UserMixin, LoginManager, login_required, login_user, cur
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, Email
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 
 import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 from Backend.accountTypeMannager import authAdmin, fetchUsers, updateAccountType
 
