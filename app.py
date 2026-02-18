@@ -148,16 +148,16 @@ def initDB():
     with app.app_context():
         db.create_all()
         # Get passwords from environment variables, with fallbacks for development
-        admin_pw = os.environ.get("ADMIN_PASSWORD")
-        user1_pw = os.environ.get("TEST_USER1_PASSWORD")
-        user2_pw = os.environ.get("TEST_USER2_PASSWORD")
-        user3_pw = os.environ.get("TEST_USER3_PASSWORD")
-        user4_pw = os.environ.get("TEST_USER4_PASSWORD")
-        user5_pw = os.environ.get("TEST_USER5_PASSWORD")
-        user6_pw = os.environ.get("TEST_USER6_PASSWORD")
-        user7_pw = os.environ.get("TEST_USER7_PASSWORD")
-        user8_pw = os.environ.get("TEST_USER8_PASSWORD")
-        user9_pw = os.environ.get("TEST_USER9_PASSWORD")
+        admin_pw = os.environ.get("ADMIN_PASSWORD", "Admin123")
+        user1_pw = os.environ.get("TEST_USER1_PASSWORD", "TestUser1")
+        user2_pw = os.environ.get("TEST_USER2_PASSWORD", "TestUser2")
+        user3_pw = os.environ.get("TEST_USER3_PASSWORD", "TestUser3")
+        user4_pw = os.environ.get("TEST_USER4_PASSWORD", "TestUser4")
+        user5_pw = os.environ.get("TEST_USER5_PASSWORD", "TestUser5")
+        user6_pw = os.environ.get("TEST_USER6_PASSWORD", "TestUser6")
+        user7_pw = os.environ.get("TEST_USER7_PASSWORD", "TestUser7")
+        user8_pw = os.environ.get("TEST_USER8_PASSWORD", "TestUser8")
+        user9_pw = os.environ.get("TEST_USER9_PASSWORD", "TestUser9")
 
         # Only add if not already present
         if not Users.query.filter(
@@ -237,6 +237,19 @@ def initDB():
             mockLicences()
         if not Sales.query.first():
             mockSales()
+
+
+    # Ensure DB is initialized at application startup (useful on hosts like Render)
+    try:
+        with app.app_context():
+            initDB()
+    except Exception:
+        # Log exception with traceback so Render logs show why init failed
+        try:
+            import logging, traceback
+            logging.getLogger(__name__).exception("initDB() failed at startup:\n%s", traceback.format_exc())
+        except Exception:
+            pass
 
 
 @app.route("/")
