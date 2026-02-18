@@ -5,13 +5,21 @@ Account Type Mannager
 {% endblock %}
 {% block content %}
 <h1>Account Type Mannager</h1>
-<form method="post" action="{{ url_for('accountTypeMannager', userid=userid) }}">
-    {{ form.csrf_token }}
-    <label for="{{ form.accounttype.id }}">Account Type</label>
-    <select name="{{ form.accounttype.name }}" id="{{ form.accounttype.id }}" class="form-control">
-        <option value="User" {% if form.accounttype.data == 'User' %}selected{% endif %}>User</option>
-        <option value="Admin" {% if form.accounttype.data == 'Admin' %}selected{% endif %}>Admin</option>
-    </select>
-    {{ form.submit }}
-</form>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-sm-6">
+            <form method="post" action="{{ url_for('accountTypeMannager', userid=userid) }}">
+                {{ form.csrf_token }}
+                <div class="mb-3">
+                    <label for="{{ form.accounttype.id }}" class="form-label">Account Type</label>
+                    <select name="{{ form.accounttype.name }}" id="{{ form.accounttype.id }}" class="form-control">
+                            <option value="User" {% if form.accounttype.data == 'User' %}selected{% endif %}>User</option>
+                            <option value="Admin" {% if form.accounttype.data == 'Admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </div>
+                {{ form.submit }}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
