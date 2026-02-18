@@ -7,7 +7,11 @@ Account Type Mannager
 <h1>Account Type Mannager</h1>
 <form method="post" action="{{ url_for('accountTypeMannager', userid=userid) }}">
     {{ form.csrf_token }}
-    {{ render_field(form.accounttype) }}
+    <label for="{{ form.accounttype.id }}">Account Type</label>
+    <select name="{{ form.accounttype.name }}" id="{{ form.accounttype.id }}" class="form-control">
+        <option value="User" {% if form.accounttype.data == 'User' %}selected{% endif %}>User</option>
+        <option value="Admin" {% if form.accounttype.data == 'Admin' %}selected{% endif %}>Admin</option>
+    </select>
     {{ form.submit }}
 </form>
 {% endblock %}

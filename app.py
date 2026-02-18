@@ -13,6 +13,10 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
+# Configure application logging early so modules can use loggers
+from Backend.logging_config import configure_logging
+configure_logging("SED")
+
 from Backend.accountTypeMannager import authAdmin, fetchUsers, updateAccountType
 
 #dbdir = "sqlite:///" + os.path.abspath(os.getcwd()) + "./Database/tables.db"
